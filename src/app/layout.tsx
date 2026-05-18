@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import SmoothScroll from "../components/SmoothScroll";
 
 // Typsnitt
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Mustafa Alikhadyer | Fullstack .NET Engineer",
     description: "Digital portfölj för Mustafa Alikhadyer. Utforska mina projekt, systemarkitektur och live-appar.",
-    url: "https://din-framtida-doman.se", // Byt ut när du publicerat sidan!
+    url: "portfolio-two-henna-uof6ovr602.vercel.app", // Byt ut när du publicerat sidan!
     siteName: "Mustafa Alikhadyer Portfolio",
     images: [
       {
@@ -38,7 +39,10 @@ export default function RootLayout({
   return (
     <html lang="sv" className="scroll-smooth">
       <body className={`${inter.variable} ${space.variable} font-sans bg-black text-white antialiased`}>
-        {children}
+        {/* HÄR AKTIVERAR VI SMOOTH SCROLL OVER HELA APPEN */}
+        <SmoothScroll>
+          {children}
+        </SmoothScroll>
       </body>
     </html>
   );
