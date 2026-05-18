@@ -2,135 +2,115 @@
 
 import { useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Environment, Float, Html, Stars } from "@react-three/drei";
+import { Environment, Float, MeshTransmissionMaterial } from "@react-three/drei";
 import * as THREE from "three";
+import { Briefcase, Calendar } from "lucide-react";
 
-// Din riktiga arbetslivserfarenhet (bara två stycken!)
-const experiences = [
-  {
-    id: 1,
-    year: "AKTUELLT",
-    role: "Fullstack .NET Developer Student",
-    company: "System Architecture & Engineering",
-    desc: "Bygger och underhåller skalbara webbapplikationer och robust systemarkitektur med fokus på modern .NET-teknologi och molnlösningar."
-  },
-  {
-    id: 2,
-    year: "AKTUELLT",
-    role: "Sales Representative",
-    company: "Telenor",
-    desc: "Ansvarig för direktförsäljning, kundrelationer och att leverera skräddarsydda telekomlösningar med fokus på högsta möjliga kundnöjdhet."
-  }
-];
-
-// Komponent för varje svävande 3D-ring
-function DataRing({ position, data, delay }: { position: [number, number, number], data: any, delay: number }) {
-  const ringRef = useRef<THREE.Group>(null);
+// De snurrande 3D-ringarna
+function DataRings() {
+  const groupRef = useRef<THREE.Group>(null);
 
   useFrame((state) => {
-    if (!ringRef.current) return;
-    const t = state.clock.elapsedTime;
-    
-    // Ringen roterar konstant och mjukt i rymden, oavsett var musen är
-    ringRef.current.rotation.y = t * 0.5 + delay;
-    ringRef.current.rotation.z = Math.sin(t * 0.5 + delay) * 0.1;
+    if (groupRef.current) {
+      groupRef.current.rotation.x = state.clock.elapsedTime * 0.1;
+      groupRef.current.rotation.y = state.clock.elapsedTime * 0.15;
+    }
   });
 
   return (
-    <group position={position} ref={ringRef}>
-      {/* Den inre glödande ringen */}
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[2.5, 0.02, 16, 100]} />
-        <meshStandardMaterial 
-          color="#00f3ff" 
-          emissive="#00f3ff" 
-          emissiveIntensity={1} 
-        />
-      </mesh>
+    <group ref={groupRef}>
+      <Float speed={2} rotationIntensity={1} floatIntensity={2}>
+        {/* Yttre ringen */}
+        <mesh rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[2.5, 0.05, 16, 100]} />
+          <meshStandardMaterial color="#00f3ff" emissive="#00f3ff" emissiveIntensity={0.5} wireframe />
+        </mesh>
+        
+        {/* Inre glas-ringen */}
+        <mesh rotation={[Math.PI / 4, Math.PI / 4, 0]}>
+          <torusGeometry args={[1.5, 0.2, 16, 100]} />
+          <MeshTransmissionMaterial 
+            backside thickness={0.5} roughness={0.1} transmission={1} ior={1.5} 
+            chromaticAberration={0.1} color="#ffffff" 
+          />
+        </mesh>
 
-      {/* Den yttre "data"-ringen med hackiga linjer (wireframe) */}
-      <mesh rotation={[Math.PI / 2, 0, 0]} scale={1.1}>
-        <torusGeometry args={[2.5, 0.1, 8, 50]} />
-        <meshBasicMaterial 
-          color="#00f3ff" 
-          wireframe 
-          transparent 
-          opacity={0.15} 
-        />
-      </mesh>
-
-      {/* HTML-innehållet (Texten) svävar konstant bredvid ringen */}
-      <Html 
-        position={[3, 0, 0]} 
-        center 
-        className="pointer-events-none w-[300px] md:w-[400px]"
-      >
-        <div className="p-6 rounded-2xl border bg-[#050505]/60 border-cyan-500/30 backdrop-blur-md shadow-[0_0_15px_rgba(0,243,255,0.1)]">
-          <p className="font-mono text-xs mb-2 tracking-widest text-cyan-400">
-            {data.year}
-          </p>
-          <h3 className="text-xl md:text-2xl font-bold mb-1 font-space text-white">
-            {data.role}
-          </h3>
-          <h4 className="text-sm text-gray-400 mb-4 uppercase tracking-wider">{data.company}</h4>
-          
-          <div className="opacity-100">
-            <p className="text-gray-400 text-sm leading-relaxed">
-              {data.desc}
-            </p>
-          </div>
-        </div>
-      </Html>
+        {/* Kärnan */}
+        <mesh>
+          <octahedronGeometry args={[0.5]} />
+          <meshStandardMaterial color="#8b5cf6" emissive="#8b5cf6" emissiveIntensity={1} />
+        </mesh>
+      </Float>
     </group>
   );
 }
 
 export default function Experience() {
   return (
-    <section className="relative min-h-[120vh] w-full py-32 overflow-hidden bg-transparent">
-      
-      {/* Rubrik */}
-      <div className="absolute top-24 left-0 w-full text-center z-10 pointer-events-none px-4">
-        <p className="text-cyan-400 font-mono text-xs uppercase tracking-[0.3em] mb-4">
-          Data Logs // Tidslinje
-        </p>
-        <h2 className="text-4xl md:text-6xl font-bold text-white font-space drop-shadow-2xl">
-          Operativ Historia.
-        </h2>
-      </div>
+    <section className="relative min-h-screen w-full bg-transparent py-20 lg:py-32 px-4 md:px-12 xl:px-24 flex items-center">
+      <div className="max-w-7xl mx-auto w-full">
+        
+        {/* Rubrik */}
+        <div className="mb-16 lg:mb-20 text-center lg:text-left">
+          <p className="text-cyan-400 font-mono text-xs uppercase tracking-[0.3em] mb-4">
+            // Arbetslivserfarenhet
+          </p>
+          <h2 className="text-4xl md:text-6xl font-bold text-white font-space">
+            System <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">History.</span>
+          </h2>
+        </div>
 
-      {/* 3D Scenen - Datakärnan */}
-      <div className="absolute inset-0 z-0">
-        <Canvas camera={{ position: [0, 0, 10], fov: 45 }}>
-          <ambientLight intensity={0.2} />
-          <Environment preset="city" />
-          <Stars radius={100} depth={50} count={2000} factor={4} fade />
+        {/* Layout: flex-col (staplad på mobil) -> lg:flex-row (sida vid sida på dator) */}
+        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
           
-          <Float speed={1.5} rotationIntensity={0.1} floatIntensity={0.5}>
+          {/* Text/Erfarenhet (Vänster) */}
+          <div className="w-full lg:w-1/2 flex flex-col gap-8 order-2 lg:order-1">
             
-            {/* Ljusstrålen / Kärnan i mitten som går genom ringarna */}
-            <mesh position={[0, 0, 0]}>
-              <cylinderGeometry args={[0.02, 0.02, 12, 16]} />
-              <meshBasicMaterial color="#00f3ff" transparent opacity={0.3} />
-            </mesh>
+            {/* Telenor Jobb */}
+            <div className="relative p-6 md:p-8 rounded-3xl bg-white/[0.02] border border-white/10 hover:border-cyan-500/30 transition-colors group">
+              <div className="absolute top-0 left-8 w-[2px] h-full bg-gradient-to-b from-cyan-500 to-transparent -z-10 opacity-50 hidden md:block" />
+              
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 rounded-full bg-black border border-cyan-500/30 flex items-center justify-center shadow-[0_0_15px_rgba(0,243,255,0.2)]">
+                  <Briefcase className="w-5 h-5 text-cyan-400" />
+                </div>
+                <div>
+                  <h3 className="text-xl md:text-2xl font-bold text-white font-space">Telenor Sverige</h3>
+                  <div className="flex items-center gap-2 text-cyan-400 font-mono text-xs mt-1">
+                    <Calendar className="w-3 h-3" />
+                    <span>2022 - Present</span>
+                  </div>
+                </div>
+              </div>
+              
+              <p className="text-gray-400 font-sans text-sm md:text-base leading-relaxed ml-0 md:ml-16">
+                Systemutveckling och underhåll av kritiska nätverksapplikationer. Fokus på storskalig backend-arkitektur, databasoptimering och att bygga robusta API:er för intern och extern kommunikation.
+              </p>
+              
+              <div className="flex flex-wrap items-center gap-2 mt-6 ml-0 md:ml-16">
+                <span className="px-3 py-1 text-[10px] font-mono text-cyan-300 bg-cyan-900/30 border border-cyan-500/20 rounded-full">.NET</span>
+                <span className="px-3 py-1 text-[10px] font-mono text-cyan-300 bg-cyan-900/30 border border-cyan-500/20 rounded-full">C#</span>
+                <span className="px-3 py-1 text-[10px] font-mono text-cyan-300 bg-cyan-900/30 border border-cyan-500/20 rounded-full">SQL Server</span>
+              </div>
+            </div>
 
-            {/* Genererar de två ringarna. Den första hamnar över mitten, den andra under. */}
-            {experiences.map((exp, index) => {
-              const yPos = 2 - index * 4; // index 0 blir +2, index 1 blir -2
-              return (
-                <DataRing 
-                  key={exp.id} 
-                  position={[0, yPos, 0]} 
-                  data={exp} 
-                  delay={index * 2} 
-                />
-              );
-            })}
+            {/* Fyll på med fler jobb här om du har! Kopiera bara rutan ovan */}
 
-          </Float>
-        </Canvas>
+          </div>
+
+          {/* 3D Visualisering (Höger) - Begränsad höjd på mobil! */}
+          <div className="w-full lg:w-1/2 h-[350px] lg:h-[600px] relative order-1 lg:order-2">
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10 pointer-events-none lg:hidden" />
+            <Canvas camera={{ position: [0, 0, 8], fov: 45 }}>
+              <ambientLight intensity={0.5} />
+              <directionalLight position={[10, 10, 5]} intensity={2} color="#ffffff" />
+              <Environment preset="city" />
+              <DataRings />
+            </Canvas>
+          </div>
+
+        </div>
       </div>
-
     </section>
   );
 }
