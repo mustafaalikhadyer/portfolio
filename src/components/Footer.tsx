@@ -7,7 +7,7 @@ export default function Footer() {
   const [copied, setCopied] = useState(false);
 
   // Byt ut denna mot din RIKTIGA mailadress!
-  const dinMail = "musse.td7@gmail.com"; 
+  const dinMail = "mustafanetdev@gmail.com"; 
 
   const handleCopyEmail = (e: React.MouseEvent) => {
     e.preventDefault();
