@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px; /* Gör att vi landar perfekt under navbaren */
+}
+
+/* Ta bort den fula blå ramen som kan dyka upp på mobiler när man klickar */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
