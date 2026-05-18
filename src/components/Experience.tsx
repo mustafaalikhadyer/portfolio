@@ -91,13 +91,20 @@ function DataRing({ position, data, delay, isMobile }: { position: [number, numb
 
 export default function Experience() {
   const [isMobile, setIsMobile] = useState(false);
+  const [mounted, setMounted] = useState(false); // FIXEN: Ny state för att se om vi landat i webbläsaren
 
   // Lyssnar på fönsterstorlek för att anpassa 3D-textens placering dynamiskt
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
+    
+    // 1. Kolla storlek direkt
     checkMobile();
+    
+    // 2. Berätta för appen att vi är monterade i webbläsaren och vet korrekt storlek
+    setMounted(true);
+    
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
@@ -105,7 +112,7 @@ export default function Experience() {
   return (
     <section className="relative min-h-[120vh] w-full py-32 overflow-hidden bg-transparent">
       
-      {/* Rubrik */}
+      {/* Rubrik - Denna laddar direkt (ingen fördröjning) */}
       <div className="absolute top-24 left-0 w-full text-center z-10 pointer-events-none px-4">
         <p className="text-cyan-400 font-mono text-xs uppercase tracking-[0.3em] mb-4">
           Data Logs // Tidslinje
@@ -115,39 +122,42 @@ export default function Experience() {
         </h2>
       </div>
 
-      {/* 3D Scenen - Datakärnan */}
-      <div className="absolute inset-0 z-0">
-        {/* På mobil backar vi kameran lite (position [0, 0, 13] istället för 10) så att hela ringen ryms på skärmen bredsida */}
-        <Canvas camera={{ position: [0, 0, isMobile ? 13 : 10], fov: 45 }}>
-          <ambientLight intensity={0.2} />
-          <Environment preset="city" />
-          <Stars radius={100} depth={50} count={2000} factor={4} fade />
-          
-          <Float speed={1.5} rotationIntensity={0.1} floatIntensity={0.5}>
+      {/* 3D Scenen - FIXEN: Vi lägger till en CSS-transition och styr synligheten med 'mounted' */}
+      <div className={`absolute inset-0 z-0 transition-opacity duration-1000 ${mounted ? "opacity-100" : "opacity-0"}`}>
+        
+        {/* Rendera bara Canvas om vi är i webbläsaren (mounted är true) */}
+        {mounted && (
+          <Canvas camera={{ position: [0, 0, isMobile ? 13 : 10], fov: 45 }}>
+            <ambientLight intensity={0.2} />
+            <Environment preset="city" />
+            <Stars radius={100} depth={50} count={2000} factor={4} fade />
             
-            {/* Ljusstrålen / Kärnan i mitten som går genom ringarna */}
-            <mesh position={[0, 0, 0]}>
-              <cylinderGeometry args={[0.02, 0.02, 14, 16]} />
-              <meshBasicMaterial color="#00f3ff" transparent opacity={0.3} />
-            </mesh>
+            <Float speed={1.5} rotationIntensity={0.1} floatIntensity={0.5}>
+              
+              {/* Ljusstrålen / Kärnan i mitten som går genom ringarna */}
+              <mesh position={[0, 0, 0]}>
+                <cylinderGeometry args={[0.02, 0.02, 14, 16]} />
+                <meshBasicMaterial color="#00f3ff" transparent opacity={0.3} />
+              </mesh>
 
-            {/* Genererar de två ringarna. Ökad y-spridning på mobil för mer luft */}
-            {experiences.map((exp, index) => {
-              const spacing = isMobile ? 4.5 : 4;
-              const yPos = isMobile ? (2.2 - index * spacing) : (2 - index * spacing);
-              return (
-                <DataRing 
-                  key={exp.id} 
-                  position={[0, yPos, 0]} 
-                  data={exp} 
-                  delay={index * 2} 
-                  isMobile={isMobile}
-                />
-              );
-            })}
+              {/* Genererar de två ringarna. Ökad y-spridning på mobil för mer luft */}
+              {experiences.map((exp, index) => {
+                const spacing = isMobile ? 4.5 : 4;
+                const yPos = isMobile ? (2.2 - index * spacing) : (2 - index * spacing);
+                return (
+                  <DataRing 
+                    key={exp.id} 
+                    position={[0, yPos, 0]} 
+                    data={exp} 
+                    delay={index * 2} 
+                    isMobile={isMobile}
+                  />
+                );
+              })}
 
-          </Float>
-        </Canvas>
+            </Float>
+          </Canvas>
+        )}
       </div>
 
     </section>
