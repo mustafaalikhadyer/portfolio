@@ -49,7 +49,7 @@ const BentoCard = ({ children, className = "" }: { children: React.ReactNode; cl
             mixBlendMode: "overlay",
           }}
         />
-        <div className="relative h-full z-10 p-8 flex flex-col justify-between" style={{ transform: "translateZ(30px)" }}>
+        <div className="relative h-full z-10 p-6 sm:p-8 flex flex-col justify-between" style={{ transform: "translateZ(30px)" }}>
           {children}
         </div>
       </div>
@@ -73,35 +73,35 @@ export default function Projects() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 auto-rows-[350px]">
+        {/* FIXEN ÄR HÄR: auto-rows-auto på mobil, lg:auto-rows-[350px] på datorn */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 auto-rows-auto lg:auto-rows-[350px]">
           
           {/* HUVUDPROJEKT: Sparasmartz */}
           <div className="lg:col-span-2 h-full">
             <BentoCard>
-              <div>
-                <Wallet className="text-emerald-400 w-10 h-10 mb-6 drop-shadow-[0_0_15px_rgba(52,211,153,0.5)]" />
-                <h3 className="text-3xl font-bold text-white mb-3 font-space">SparaSmartz</h3>
-                <p className="text-gray-400 font-sans text-lg max-w-xl leading-relaxed">
+              <div className="mb-6 lg:mb-0">
+                <Wallet className="text-emerald-400 w-10 h-10 mb-4 sm:mb-6 drop-shadow-[0_0_15px_rgba(52,211,153,0.5)]" />
+                <h3 className="text-2xl sm:text-3xl font-bold text-white mb-3 font-space">SparaSmartz</h3>
+                <p className="text-gray-400 font-sans text-base sm:text-lg max-w-xl leading-relaxed">
                   En intelligent webbapplikation för privatekonomi och smart sparande. Optimerad för att hjälpa användare att strukturera sin budget och maximera sina sparmål. 
                 </p>
               </div>
               
-              {/* MOBIL-FIXEN HÄR: flex-wrap och justify-between */}
-              <div className="flex flex-wrap items-center justify-between gap-4 mt-auto pt-8 border-t border-white/5">
+              {/* Länkar och knappar - Tvingas ner på egen rad när det behövs */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-auto pt-6 sm:pt-8 border-t border-white/5">
                 
-                {/* Taggarna grupperade så de håller ihop */}
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="px-2 py-1 sm:px-3 text-[10px] sm:text-xs font-mono text-emerald-300 bg-emerald-500/10 rounded-full border border-emerald-500/20">Next.js</span>
                   <span className="px-2 py-1 sm:px-3 text-[10px] sm:text-xs font-mono text-blue-300 bg-blue-500/10 rounded-full border border-blue-500/20">TypeScript</span>
                   <span className="px-2 py-1 sm:px-3 text-[10px] sm:text-xs font-mono text-purple-300 bg-purple-500/10 rounded-full border border-purple-500/20">Tailwind</span>
                 </div>
                 
-                {/* Knappen: 100% bred på mobil, smal och osynlig bakgrund på dator */}
+                {/* Nu får knappen alltid plats i botten på mobilen */}
                 <a 
                   href="https://sparasmartz.se" 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="flex items-center justify-center gap-2 w-full sm:w-auto mt-2 sm:mt-0 py-3 sm:py-0 text-cyan-400 hover:text-white transition-colors group/link bg-cyan-500/10 sm:bg-transparent rounded-lg sm:rounded-none border border-cyan-500/30 sm:border-transparent"
+                  className="flex items-center justify-center gap-2 w-full sm:w-auto py-3 sm:py-0 text-cyan-400 hover:text-white transition-colors group/link bg-cyan-500/10 sm:bg-transparent rounded-lg sm:rounded-none border border-cyan-500/30 sm:border-transparent mt-2 sm:mt-0"
                 >
                   <span className="font-mono text-[11px] sm:text-xs tracking-widest uppercase">Launch_App</span>
                   <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5 group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-transform" />
@@ -112,9 +112,9 @@ export default function Projects() {
           </div>
 
           {/* IN THE LAB */}
-          <div className="lg:col-span-1 h-full">
+          <div className="lg:col-span-1 min-h-[250px] lg:min-h-0 h-full">
             <BentoCard className="border-dashed border-white/20">
-              <div className="h-full flex flex-col items-center justify-center text-center opacity-70 group-hover:opacity-100 transition-opacity">
+              <div className="h-full flex flex-col items-center justify-center text-center opacity-70 group-hover:opacity-100 transition-opacity py-8 lg:py-0">
                 <div className="w-16 h-16 rounded-full border border-cyan-500/30 flex items-center justify-center mb-6 animate-[spin_10s_linear_infinite]">
                   <Lock className="w-6 h-6 text-cyan-400 animate-pulse" />
                 </div>
@@ -130,7 +130,7 @@ export default function Projects() {
           {/* SYSTEM ARCHITECTURE */}
           <div className="lg:col-span-3 h-auto sm:h-[250px]">
             <BentoCard>
-              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8 h-full text-center sm:text-left">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8 h-full text-center sm:text-left py-4 sm:py-0">
                 <div className="hidden sm:flex w-24 h-24 rounded-2xl bg-gradient-to-br from-gray-900 to-black items-center justify-center border border-white/10 shadow-[0_0_30px_rgba(255,255,255,0.05)] shrink-0">
                   <Terminal className="w-10 h-10 text-gray-400" />
                 </div>
