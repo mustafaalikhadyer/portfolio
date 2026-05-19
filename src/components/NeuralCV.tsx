@@ -16,9 +16,9 @@ import { Zap, BrainCircuit, Briefcase, GraduationCap, Languages, Award } from "l
 // --- DATA FÖR DITT CV ---
 const cvData = {
   profile: {
-    title: "Systemutvecklare .NET",
-    summary: "Passionerad utvecklare med fokus på skalbar backend-arkitektur, robust API-design och moderna webbgränssnitt. Specialist på Microsoft-stacken.",
-    languages: ["Svenska (Modersmål)", "Engelska (Flytande)", "Arabiska (God förståelse)"]
+    title: "Fullstack Developer .NET",
+    summary: "Passionerad utvecklare med fokus på både frontend och skalbar backend-arkitektur, robust API-design och moderna webbgränssnitt.",
+    languages: ["Svenska (Flytande)", "Engelska (Flytande)", "Arabiska (Modersmål)"]
   },
   skills: [
     { name: ".NET / C#", level: "95%" },
@@ -143,7 +143,7 @@ export default function NeuralCV() {
           Neural <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400">Database.</span>
         </h2>
         <p className="text-gray-500 font-mono text-[10px] mt-6 uppercase animate-pulse">
-          Drag horizontally to inspect the nodes
+          Dra horisontellt för att inspektera noderna
         </p>
       </div>
 
