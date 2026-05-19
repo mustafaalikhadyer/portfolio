@@ -1,10 +1,11 @@
 import Preloader from "../components/Preloader";
 import AmbientBackground from "../components/AmbientBackground";
 import CustomCursor from "../components/CustomCursor";
-import Navbar from "../components/Navbar"; // <-- Din nya navbar!
+import Navbar from "../components/Navbar"; 
 import Hero from "../components/Hero";
 import About from "../components/About";
 import Experience from "../components/Experience";
+import NeuralCV from "../components/NeuralCV"; // <-- FIXEN: Ändrat till ../ så den matchar de andra!
 import Projects from "../components/Projects";
 import Footer from "../components/Footer";
 import ScrollReveal from "../components/ScrollReveal";
@@ -35,6 +36,13 @@ export default function Home() {
         <div id="experience">
           <ScrollReveal>
             <Experience />
+          </ScrollReveal>
+        </div>
+
+        {/* 🚀 DITT NYA NEURALA 3D-CV LIGGER HÄR 🚀 */}
+        <div id="skills">
+          <ScrollReveal>
+            <NeuralCV />
           </ScrollReveal>
         </div>
 
