@@ -132,7 +132,8 @@ export default function NeuralCV() {
           Neural <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400">Database.</span>
         </h2>
         <p className="text-gray-500 font-mono text-[10px] mt-6 uppercase animate-pulse">
-          Drag horizontally to inspect the nodes
+          
+         Dra horisontellt för att inspektera noderna
         </p>
       </div>
 
