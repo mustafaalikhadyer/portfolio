@@ -1,39 +1,47 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
+import React, { useEffect, useRef } from "react";
 
 export default function CustomCursor() {
-  const cursorRef = useRef<HTMLDivElement>(null);
-  const auraRef = useRef<HTMLDivElement>(null);
+  const cursorDotRef = useRef<HTMLDivElement>(null);
+  const cursorOutlineRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const cursor = cursorRef.current;
-    const aura = auraRef.current;
-    if (!cursor || !aura) return;
+    // Vi kollar så vi inte är på en mobil (mobiler har ingen mus)
+    if (window.matchMedia("(pointer: coarse)").matches) return;
 
-    const onMouseMove = (e: MouseEvent) => {
-      // Den inre pricken följer musen direkt
-      gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0 });
-      // Auran följer efter med en smörig fördröjning (0.5s)
-      gsap.to(aura, { x: e.clientX, y: e.clientY, duration: 0.5, ease: "power3.out" });
+    const moveCursor = (e: MouseEvent) => {
+      // translate3d tvingar Macens GPU att hantera rörelsen = Noll lagg
+      if (cursorDotRef.current) {
+        cursorDotRef.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
+      }
+      if (cursorOutlineRef.current) {
+        // En liten fördröjning på outlinen för snygg effekt
+        setTimeout(() => {
+          if (cursorOutlineRef.current) {
+            cursorOutlineRef.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
+          }
+        }, 50);
+      }
     };
 
-    window.addEventListener("mousemove", onMouseMove);
-    return () => window.removeEventListener("mousemove", onMouseMove);
+    window.addEventListener("mousemove", moveCursor);
+    return () => window.removeEventListener("mousemove", moveCursor);
   }, []);
 
   return (
     <>
-      {/* Vi gömmer vanliga muspekaren i hela appen genom en global klass i layout.tsx senare, 
-          men för säkerhets skull lägger vi pointer-events-none här */}
+      {/* Själva pricken */}
       <div 
-        ref={cursorRef} 
-        className="fixed top-0 left-0 w-2 h-2 bg-white rounded-full pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 mix-blend-difference hidden md:block" 
+        ref={cursorDotRef}
+        className="fixed top-0 left-0 w-2 h-2 bg-cyan-400 rounded-full pointer-events-none z-[9999] hidden md:block"
+        style={{ willChange: "transform" }}
       />
+      {/* Den yttre cirkeln */}
       <div 
-        ref={auraRef} 
-        className="fixed top-0 left-0 w-12 h-12 border border-cyan-400/50 bg-cyan-400/10 rounded-full pointer-events-none z-[9998] -translate-x-1/2 -translate-y-1/2 blur-[1px] hidden md:block" 
+        ref={cursorOutlineRef}
+        className="fixed top-0 left-0 w-8 h-8 border border-cyan-400/50 rounded-full pointer-events-none z-[9998] hidden md:block transition-transform duration-75 ease-out"
+        style={{ willChange: "transform" }}
       />
     </>
   );
