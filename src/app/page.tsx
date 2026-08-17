@@ -38,8 +38,7 @@ export default function Home() {
             <Experience />
           </ScrollReveal>
         </div>
-
-        {/* 🚀 DITT NYA NEURALA 3D-CV LIGGER HÄR 🚀 */}
+{/* 🚀 DITT NYA NEURALA 3D-CV LIGGER HÄR 🚀 */}
         <div id="skills">
           <ScrollReveal>
             <NeuralCV />

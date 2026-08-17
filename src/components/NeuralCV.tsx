@@ -2,13 +2,7 @@
 
 import React, { useRef, Suspense, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { 
-  OrbitControls, 
-  Float, 
-  Html, 
-  Environment,
-  Stars
-} from "@react-three/drei";
+import { OrbitControls, Float, Html, Environment, Stars } from "@react-three/drei";
 import * as THREE from "three";
 import { Zap, BrainCircuit, Briefcase, GraduationCap, Languages, Award } from "lucide-react";
 
@@ -42,29 +36,19 @@ const cvData = {
   ]
 };
 
-// --- OPTIMERAD INFO-PANEL ---
+// --- HELT NYA PANELER (INGET GLAS = INGET LAGG) ---
 function CVPane({ title, icon: Icon, children, rotation, position }: { title: string, icon: any, children: React.ReactNode, rotation: [number, number, number], position: [number, number, number] }) {
   return (
     <group position={position} rotation={rotation}>
-      {/* 
-        HÄR ÄR MAGIN: Inga tunga 3D-mesh material bakom. 
-        Bara ren HTML svävande i 3D. 
-      */}
       <Html transform distanceFactor={5} position={[0, 0, 0]} className="pointer-events-none">
-        {/* Solid svart bakgrund (bg-black) och inga skuggor fixar lagget i Safari/MacBook */}
-        <div className="w-[460px] h-[660px] p-8 flex flex-col font-sans select-none text-white overflow-hidden bg-black border-2 border-cyan-500/40 rounded-2xl">
-          
+        <div className="w-[460px] h-[660px] p-8 flex flex-col font-sans select-none text-white overflow-hidden bg-black/95 border-2 border-cyan-500/50 rounded-2xl shadow-[0_0_30px_rgba(0,243,255,0.1)]">
           <div className="flex items-center gap-4 mb-6 border-b border-cyan-500/20 pb-5">
             <div className="w-14 h-14 rounded-full bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center">
               <Icon className="w-7 h-7 text-cyan-400" />
             </div>
             <h3 className="text-3xl font-bold font-space uppercase tracking-wider">{title}</h3>
           </div>
-
-          <div className="flex-1 space-y-5 custom-scrollbar">
-            {children}
-          </div>
-
+          <div className="flex-1 space-y-5 custom-scrollbar">{children}</div>
           <div className="mt-auto pt-4 text-center border-t border-cyan-500/10">
             <span className="text-[10px] font-mono text-cyan-700 tracking-widest uppercase">Neural_Network // node.verified</span>
           </div>
@@ -74,41 +58,27 @@ function CVPane({ title, icon: Icon, children, rotation, position }: { title: st
   );
 }
 
-// --- DEN CENTRALA TEKNIK-SFÄREN ---
+// --- BOLLEN ---
 function NeuralCore() {
   const meshRef = useRef<THREE.Mesh>(null);
-
   useFrame((state) => {
     if (meshRef.current) {
       meshRef.current.rotation.y = state.clock.elapsedTime * 0.05;
       meshRef.current.rotation.x = state.clock.elapsedTime * 0.03;
     }
   });
-
   return (
     <mesh ref={meshRef}>
       <icosahedronGeometry args={[3, 10]} />
-      <meshStandardMaterial 
-        color="#00f3ff" 
-        emissive="#00f3ff" 
-        emissiveIntensity={1} 
-        wireframe 
-        transparent 
-        opacity={0.15}
-        blending={THREE.AdditiveBlending}
-      />
+      <meshStandardMaterial color="#00f3ff" emissive="#00f3ff" emissiveIntensity={1} wireframe transparent opacity={0.15} blending={THREE.AdditiveBlending} />
     </mesh>
   );
 }
 
-// --- HUVUDKOMPONENTEN ---
+// --- HUVUDKOMPONENT ---
 export default function NeuralCV() {
   const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
+  useEffect(() => setMounted(true), []);
   if (!mounted) return <div className="h-screen w-full bg-black"></div>;
 
   return (
@@ -116,7 +86,7 @@ export default function NeuralCV() {
       
       <div className="text-center mb-6 z-10 px-4 pointer-events-none mt-10">
         <p className="text-cyan-400 font-mono text-xs uppercase tracking-[0.3em] mb-4">
-          Core Identity // System Logs
+          Core Identity // System Logs v3.0
         </p>
         <h2 className="text-4xl md:text-6xl font-bold text-white font-space">
           Neural <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400">Database.</span>
@@ -127,35 +97,19 @@ export default function NeuralCV() {
       </div>
 
       <div className="w-full h-full cursor-grab active:cursor-grabbing relative z-20 touch-none">
-        
-        {/* Enkel glow i bakgrunden */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-900/10 rounded-full blur-[150px] pointer-events-none" />
-
-        {/* dpr={[1, 1]} hindrar retina-skärmar från att smälta */}
         <Canvas camera={{ position: [0, 0, 22], fov: 45 }} dpr={[1, 1]} gl={{ antialias: false, powerPreference: "high-performance" }}>
           <Suspense fallback={null}>
             <Environment preset="night" />
             <ambientLight intensity={0.5} />
             <pointLight position={[10, 10, 10]} intensity={1.5} color="#00f3ff" />
             
-            <OrbitControls 
-              enableZoom={false} 
-              enablePan={false} 
-              enableDamping={true} 
-              dampingFactor={0.05} 
-              rotateSpeed={0.5}
-              minPolarAngle={Math.PI / 2 - 0.15} 
-              maxPolarAngle={Math.PI / 2 + 0.15}
-            />
+            <OrbitControls enableZoom={false} enablePan={false} enableDamping={true} dampingFactor={0.05} rotateSpeed={0.5} minPolarAngle={Math.PI / 2 - 0.15} maxPolarAngle={Math.PI / 2 + 0.15} />
               
-            {/* Endast BOLLEN svävar. Korten är utanför Float-taggen! */}
             <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
               <NeuralCore />
             </Float>
 
-            {/* KORTEN (Renderas nu extremt snabbt) */}
             <group>
-              {/* 1. PROFIL */}
               <CVPane title="Profile" icon={BrainCircuit} position={[0, 0, 7.5]} rotation={[0, 0, 0]}>
                 <p className="text-cyan-300 font-space text-2xl font-bold leading-snug">{cvData.profile.title}</p>
                 <p className="text-gray-300 text-sm leading-relaxed">{cvData.profile.summary}</p>
@@ -166,8 +120,6 @@ export default function NeuralCV() {
                   ))}
                 </div>
               </CVPane>
-
-              {/* 2. SKILLS */}
               <CVPane title="Stack" icon={Zap} position={[7.5, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
                 {cvData.skills.map((skill, i) => (
                   <div key={i} className="mb-1">
@@ -181,8 +133,6 @@ export default function NeuralCV() {
                   </div>
                 ))}
               </CVPane>
-
-              {/* 3. JOBB */}
               <CVPane title="Jobb" icon={Briefcase} position={[0, 0, -7.5]} rotation={[0, Math.PI, 0]}>
                 {cvData.experience.map((job, i) => (
                   <div key={i} className="relative pl-6 border-l-2 border-cyan-500/20 py-4 hover:bg-white/5 transition-colors rounded-r-xl">
@@ -193,8 +143,6 @@ export default function NeuralCV() {
                   </div>
                 ))}
               </CVPane>
-
-              {/* 4. UTBILDNINGAR */}
               <CVPane title="Utbildningar" icon={GraduationCap} position={[-7.5, 0, 0]} rotation={[0, -Math.PI / 2, 0]}>
                 {cvData.education.map((edu, i) => (
                   <div key={i} className="mb-4 p-4 rounded-xl bg-white/[0.05] border border-white/10">
@@ -203,11 +151,8 @@ export default function NeuralCV() {
                     <p className="text-gray-400 text-xs mt-1">{edu.school}</p>
                   </div>
                 ))}
-
                 <div className="mt-6 pt-5 border-t border-cyan-500/10 space-y-3">
-                  <p className="text-cyan-400 font-mono text-xs uppercase flex items-center gap-2">
-                    <Award className="w-4 h-4" /> // Certifikat
-                  </p>
+                  <p className="text-cyan-400 font-mono text-xs uppercase flex items-center gap-2"><Award className="w-4 h-4" /> // Certifikat</p>
                   {cvData.certifications.map((cert, i) => (
                     <div key={i} className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30">
                       <h5 className="text-white font-bold text-sm leading-tight">{cert.name}</h5>
@@ -217,9 +162,8 @@ export default function NeuralCV() {
                 </div>
               </CVPane>
             </group>
-
-            {/* Tog bort majoriteten av stjärnorna, ritar 400 stjärnor i låg upplösning = 0 lagg */}
-            <Stars radius={100} depth={50} count={400} factor={4} fade speed={0.5} />
+            
+            <Stars radius={100} depth={50} count={300} factor={4} fade speed={0.5} />
           </Suspense>
         </Canvas>
       </div>
