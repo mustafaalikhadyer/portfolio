@@ -1,10 +1,7 @@
 "use client";
 
-import React, { useRef, useState, useEffect, Suspense } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Environment, Stars } from "@react-three/drei";
-import * as THREE from "three";
-import { Zap, BrainCircuit, Briefcase, GraduationCap, Languages, Award } from "lucide-react";
+import React, { useRef, useState, useEffect } from "react";
+import { Zap, BrainCircuit, Briefcase, GraduationCap, Languages, Award, ChevronLeft, ChevronRight } from "lucide-react";
 
 // --- DATA FÖR DITT CV ---
 const cvData = {
@@ -36,105 +33,105 @@ const cvData = {
   ]
 };
 
-// --- BAKGRUNDS-BOLLEN (Kräver nästan 0% processorkraft) ---
-function BackgroundSphere() {
-  const meshRef = useRef<THREE.Mesh>(null);
-  useFrame((state) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y = state.clock.elapsedTime * 0.05;
-      meshRef.current.rotation.x = state.clock.elapsedTime * 0.03;
-    }
-  });
-  return (
-    <mesh ref={meshRef} scale={1.8}>
-      <icosahedronGeometry args={[2, 2]} />
-      <meshStandardMaterial color="#00f3ff" wireframe transparent opacity={0.15} />
-    </mesh>
-  );
-}
-
 export default function CyberCV() {
   const [mounted, setMounted] = useState(false);
+  const carouselRef = useRef<HTMLDivElement>(null);
   
-  // State för den lagg-fria CSS 3D-karusellen
-  const [rotation, setRotation] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [startRot, setStartRot] = useState(0);
+  // Vi använder Ref istället för State under dragning (Detta DÖDAR lagget!)
+  const drag = useRef({ isDragging: false, startX: 0, currentRot: 0, startRot: 0 });
 
   useEffect(() => setMounted(true), []);
 
-  // Smidig drag-logik
+  // --- SUPER-OPTIMERAD DRAG-LOGIK ---
   const handlePointerDown = (e: React.PointerEvent) => {
-    setIsDragging(true);
-    setStartX(e.clientX);
-    setStartRot(rotation);
+    drag.current.isDragging = true;
+    drag.current.startX = e.clientX;
+    drag.current.startRot = drag.current.currentRot;
+    if (carouselRef.current) carouselRef.current.style.transition = "none";
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isDragging) return;
-    const delta = (e.clientX - startX) * 0.4; // Fart på snurren
-    setRotation(startRot + delta);
+    if (!drag.current.isDragging || !carouselRef.current) return;
+    const delta = (e.clientX - drag.current.startX) * 0.4;
+    drag.current.currentRot = drag.current.startRot + delta;
+    // Vi ändrar DOM direkt = React behöver inte rendera om sidan = NOLL LAGG
+    carouselRef.current.style.transform = `rotateY(${drag.current.currentRot}deg)`;
   };
 
   const handlePointerUp = () => {
-    if (!isDragging) return;
-    setIsDragging(false);
-    // Premium-funktion: Snäpper fast kortet snyggt när du släpper det!
-    const snapped = Math.round(rotation / 90) * 90;
-    setRotation(snapped);
+    if (!drag.current.isDragging || !carouselRef.current) return;
+    drag.current.isDragging = false;
+    
+    // Snäpper fast till närmaste 90-grader (Snygg UX)
+    const snapped = Math.round(drag.current.currentRot / 90) * 90;
+    drag.current.currentRot = snapped;
+    
+    carouselRef.current.style.transition = "transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)";
+    carouselRef.current.style.transform = `rotateY(${snapped}deg)`;
+  };
+
+  // Knappar för de som inte vill dra
+  const rotateTo = (direction: 'left' | 'right') => {
+    if (!carouselRef.current) return;
+    drag.current.currentRot += direction === 'left' ? 90 : -90;
+    carouselRef.current.style.transition = "transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)";
+    carouselRef.current.style.transform = `rotateY(${drag.current.currentRot}deg)`;
   };
 
   if (!mounted) return <div className="h-screen w-full bg-black"></div>;
 
   return (
-    <section className="relative min-h-[1000px] h-[100vh] w-full py-20 bg-black flex flex-col items-center overflow-hidden">
+    <section className="relative min-h-[900px] h-[100vh] w-full py-20 bg-black flex flex-col items-center overflow-hidden">
       
-      {/* --- WEBGL BAKGRUNDEN (Frikopplad från scrollen = Inget lagg) --- */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <Canvas camera={{ position: [0, 0, 10], fov: 45 }} dpr={[1, 1]} gl={{ antialias: false, alpha: false }}>
-          <color attach="background" args={["#000000"]} />
-          <Suspense fallback={null}>
-            <Environment preset="night" />
-            <ambientLight intensity={0.5} />
-            <BackgroundSphere />
-            <Stars radius={50} depth={20} count={300} factor={3} fade speed={0.5} />
-          </Suspense>
-        </Canvas>
-      </div>
-
-      {/* --- RUBRIK --- */}
-      <div className="text-center mb-10 z-10 px-4 mt-10 pointer-events-none">
+      {/* Rubrik */}
+      <div className="text-center mb-6 z-20 px-4 mt-4 pointer-events-none">
         <p className="text-cyan-400 font-mono text-xs uppercase tracking-[0.3em] mb-4">
           Core Identity // System Logs
         </p>
         <h2 className="text-4xl md:text-6xl font-bold text-white font-space">
           Cyber <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400">CV.</span>
         </h2>
+        <p className="text-gray-500 font-mono text-[10px] mt-6 uppercase">
+          Dra korten eller använd pilarna
+        </p>
       </div>
 
-      {/* --- DEN LAGG-FRIA CSS-KARUSELLEN --- */}
+      {/* --- INGEN WEBGL - BARA REN CSS --- */}
       <div 
-        className="relative z-10 w-full flex-1 flex items-center justify-center cursor-grab active:cursor-grabbing"
-        style={{ perspective: "1200px", touchAction: "pan-y" }} // pan-y tillåter scroll upp/ner på mobilen!
+        className="w-full flex-1 flex items-center justify-center relative z-10 touch-none cursor-grab active:cursor-grabbing"
+        style={{ perspective: "1200px" }}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}
       >
-        {/* Kontainern som snurrar */}
+        
+        {/* DEN GLÖDANDE BOLLEN (Fejkad med CSS för 100% prestanda) */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 pointer-events-none">
+          <div className="absolute inset-0 rounded-full border border-cyan-500/30 animate-[spin_10s_linear_infinite]" />
+          <div className="absolute inset-0 rounded-full border border-cyan-500/30 animate-[spin_12s_linear_infinite] opacity-60" style={{ transform: "rotateX(60deg)" }} />
+          <div className="absolute inset-0 rounded-full border border-cyan-500/30 animate-[spin_14s_linear_infinite] opacity-60" style={{ transform: "rotateY(60deg)" }} />
+          <div className="absolute inset-0 rounded-full bg-cyan-500/5 shadow-[0_0_80px_rgba(0,243,255,0.15)] blur-md" />
+        </div>
+
+        {/* PILAR (Ligger utanför 3D för klickbarhet) */}
+        <button onClick={(e) => { e.stopPropagation(); rotateTo('left'); }} className="absolute left-4 md:left-12 z-50 p-4 text-cyan-500 hover:text-white hover:bg-cyan-500/20 rounded-full transition-all bg-black/40 border border-cyan-500/30 backdrop-blur-md hidden md:block">
+          <ChevronLeft className="w-8 h-8" />
+        </button>
+        <button onClick={(e) => { e.stopPropagation(); rotateTo('right'); }} className="absolute right-4 md:right-12 z-50 p-4 text-cyan-500 hover:text-white hover:bg-cyan-500/20 rounded-full transition-all bg-black/40 border border-cyan-500/30 backdrop-blur-md hidden md:block">
+          <ChevronRight className="w-8 h-8" />
+        </button>
+
+        {/* 3D KARUSELLEN (Ren CSS) */}
         <div 
-          className="w-full max-w-[420px] h-[600px] relative transform scale-[0.75] md:scale-100"
-          style={{ 
-            transformStyle: "preserve-3d", 
-            transform: `rotateY(${rotation}deg)`,
-            transition: isDragging ? "none" : "transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)"
-          }}
+          ref={carouselRef}
+          className="w-full max-w-[400px] h-[600px] relative transform scale-[0.8] md:scale-100"
+          style={{ transformStyle: "preserve-3d" }}
         >
           {/* PANEL 1: PROFIL */}
           <div 
-            className="absolute inset-0 p-8 flex flex-col font-sans select-none text-white overflow-hidden bg-[#050505] border-2 border-cyan-500/50 rounded-3xl"
-            style={{ transform: "rotateY(0deg) translateZ(350px)", backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
+            className="absolute inset-0 p-8 flex flex-col font-sans select-none text-white overflow-hidden bg-[#0a0a0a] border-2 border-cyan-500/40 rounded-3xl shadow-[0_0_30px_rgba(0,0,0,0.8)]"
+            style={{ transform: "rotateY(0deg) translateZ(320px)", backfaceVisibility: "hidden" }}
           >
             <div className="flex items-center gap-4 mb-6 border-b border-cyan-500/20 pb-5">
               <div className="w-14 h-14 rounded-full bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center">
@@ -154,8 +151,8 @@ export default function CyberCV() {
 
           {/* PANEL 2: STACK */}
           <div 
-            className="absolute inset-0 p-8 flex flex-col font-sans select-none text-white overflow-hidden bg-[#050505] border-2 border-cyan-500/50 rounded-3xl"
-            style={{ transform: "rotateY(90deg) translateZ(350px)", backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
+            className="absolute inset-0 p-8 flex flex-col font-sans select-none text-white overflow-hidden bg-[#0a0a0a] border-2 border-cyan-500/40 rounded-3xl shadow-[0_0_30px_rgba(0,0,0,0.8)]"
+            style={{ transform: "rotateY(90deg) translateZ(320px)", backfaceVisibility: "hidden" }}
           >
             <div className="flex items-center gap-4 mb-6 border-b border-cyan-500/20 pb-5">
               <div className="w-14 h-14 rounded-full bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center">
@@ -163,14 +160,14 @@ export default function CyberCV() {
               </div>
               <h3 className="text-3xl font-bold font-space uppercase tracking-wider">Stack</h3>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-5">
               {cvData.skills.map((skill, i) => (
                 <div key={i}>
-                  <div className="flex justify-between text-[11px] font-mono text-gray-400 mb-1.5 uppercase">
+                  <div className="flex justify-between text-[11px] font-mono text-gray-400 mb-2 uppercase">
                     <span>{skill.name}</span>
                     <span className="text-cyan-400">{skill.level}</span>
                   </div>
-                  <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                  <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
                     <div className="h-full bg-cyan-500" style={{ width: skill.level }} />
                   </div>
                 </div>
@@ -180,8 +177,8 @@ export default function CyberCV() {
 
           {/* PANEL 3: JOBB */}
           <div 
-            className="absolute inset-0 p-8 flex flex-col font-sans select-none text-white overflow-hidden bg-[#050505] border-2 border-cyan-500/50 rounded-3xl"
-            style={{ transform: "rotateY(180deg) translateZ(350px)", backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
+            className="absolute inset-0 p-8 flex flex-col font-sans select-none text-white overflow-hidden bg-[#0a0a0a] border-2 border-cyan-500/40 rounded-3xl shadow-[0_0_30px_rgba(0,0,0,0.8)]"
+            style={{ transform: "rotateY(180deg) translateZ(320px)", backfaceVisibility: "hidden" }}
           >
             <div className="flex items-center gap-4 mb-6 border-b border-cyan-500/20 pb-5">
               <div className="w-14 h-14 rounded-full bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center">
@@ -192,7 +189,7 @@ export default function CyberCV() {
             <div className="space-y-6">
               {cvData.experience.map((job, i) => (
                 <div key={i} className="relative pl-6 border-l-2 border-cyan-500/20 py-2">
-                  <div className="absolute left-[-6px] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-cyan-500" />
+                  <div className="absolute left-[-7px] top-4 w-3 h-3 rounded-full bg-cyan-500 shadow-[0_0_10px_rgba(0,243,255,0.5)]" />
                   <p className="text-cyan-400 font-mono text-xs mb-1">{job.year}</p>
                   <h4 className="text-white font-bold text-lg font-space leading-tight">{job.role}</h4>
                   <p className="text-gray-400 text-sm uppercase tracking-wider mt-1">{job.company}</p>
@@ -203,8 +200,8 @@ export default function CyberCV() {
 
           {/* PANEL 4: UTBILDNINGAR */}
           <div 
-            className="absolute inset-0 p-8 flex flex-col font-sans select-none text-white overflow-hidden bg-[#050505] border-2 border-cyan-500/50 rounded-3xl"
-            style={{ transform: "rotateY(270deg) translateZ(350px)", backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
+            className="absolute inset-0 p-8 flex flex-col font-sans select-none text-white overflow-hidden bg-[#0a0a0a] border-2 border-cyan-500/40 rounded-3xl shadow-[0_0_30px_rgba(0,0,0,0.8)]"
+            style={{ transform: "rotateY(270deg) translateZ(320px)", backfaceVisibility: "hidden" }}
           >
             <div className="flex items-center gap-4 mb-6 border-b border-cyan-500/20 pb-5">
               <div className="w-14 h-14 rounded-full bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center">
@@ -226,7 +223,7 @@ export default function CyberCV() {
               {cvData.certifications.map((cert, i) => (
                 <div key={i} className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20">
                   <h5 className="text-white font-bold text-sm">{cert.name}</h5>
-                  <p className="text-gray-400 text-[10px] font-mono mt-1">{cert.detail}</p>
+                  <p className="text-gray-400 text-[11px] font-mono mt-1">{cert.detail}</p>
                 </div>
               ))}
             </div>
