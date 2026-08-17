@@ -39,7 +39,15 @@ function CVPane({ title, icon: Icon, children, rotation, position }: { title: st
   return (
     <group position={position} rotation={rotation}>
       <Html transform distanceFactor={5} position={[0, 0, 0]} className="pointer-events-none">
-        <div className="w-[460px] h-[660px] p-8 flex flex-col font-sans select-none text-white overflow-hidden bg-[#050505] border-2 border-cyan-500/50 rounded-2xl">
+        {/* FIXEN: backfaceVisibility="hidden" & willChange="transform" dödar lagget från HTML i 3D */}
+        <div 
+          className="w-[460px] h-[660px] p-8 flex flex-col font-sans select-none text-white overflow-hidden bg-[#050505] border-2 border-cyan-500/50 rounded-2xl"
+          style={{ 
+            backfaceVisibility: "hidden", 
+            WebkitBackfaceVisibility: "hidden",
+            willChange: "transform"
+          }}
+        >
           <div className="flex items-center gap-4 mb-6 border-b border-cyan-500/20 pb-5">
             <div className="w-14 h-14 rounded-full bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center">
               <Icon className="w-7 h-7 text-cyan-400" />
@@ -72,10 +80,11 @@ function NeuralCore() {
 export default function CyberCV() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+  
   if (!mounted) return <div className="h-screen w-full bg-black"></div>;
 
   return (
-    <section className="relative min-h-[1000px] h-[100vh] w-full py-20 bg-transparent flex flex-col items-center overflow-hidden">
+    <section className="relative min-h-[1000px] h-[100vh] w-full py-20 bg-black flex flex-col items-center overflow-hidden">
       
       <div className="text-center mb-6 z-10 px-4 pointer-events-none mt-10">
         <p className="text-cyan-400 font-mono text-xs uppercase tracking-[0.3em] mb-4">
@@ -86,14 +95,17 @@ export default function CyberCV() {
         </h2>
       </div>
 
-      <div className="w-full h-full cursor-grab active:cursor-grabbing relative z-20">
-        {/* FIXEN: Ersatte CSS-blur med en prestandavänlig radial-gradient! Denna drar noll datorkraft på Mac. */}
-        <div 
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full pointer-events-none" 
-          style={{ background: 'radial-gradient(circle, rgba(6,182,212,0.15) 0%, rgba(0,0,0,0) 70%)' }}
-        />
+      {/* FIXEN: style={{ contain: 'content' }} separerar 3D-motorn från resten av hemsidans scroll */}
+      <div 
+        className="w-full h-full cursor-grab active:cursor-grabbing relative z-20 touch-none"
+        style={{ contain: 'content' }}
+      >
+        {/* FIXEN: alpha={false} gör bakgrunden Opaque (solid svart). Detta räddar Mac-datorer från Compositing lag! */}
+        <Canvas camera={{ position: [0, 0, 22], fov: 45 }} dpr={[1, 1]} gl={{ antialias: false, powerPreference: "high-performance", alpha: false }}>
+          
+          {/* Sätter bakgrunden till kolsvart för att smälta in i hemsidan, men utan genomskinlighet */}
+          <color attach="background" args={["#000000"]} />
 
-        <Canvas camera={{ position: [0, 0, 22], fov: 45 }} dpr={[1, 1]} gl={{ antialias: false, powerPreference: "high-performance", alpha: true }}>
           <Suspense fallback={null}>
             <Environment preset="night" />
             
