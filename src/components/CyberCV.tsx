@@ -8,7 +8,7 @@ const cvData = {
   profile: {
     title: "Systemutvecklare .NET",
     summary: "Passionerad utvecklare med fokus på skalbar backend-arkitektur, robust API-design och moderna webbgränssnitt. Specialist på Microsoft-stacken.",
-    languages: ["Svenska (Modersmål)", "Engelska (Flytande)", "Arabiska (God förståelse)"]
+    languages: ["Svenska (Flytande)", "Engelska (Flytande)", "Arabiska (Modersmål)"]
   },
   skills: [
     { name: ".NET / C#", level: "95%" },
