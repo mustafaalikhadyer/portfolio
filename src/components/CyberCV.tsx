@@ -37,12 +37,10 @@ export default function CyberCV() {
   const [mounted, setMounted] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
   
-  // Vi använder Ref istället för State under dragning (Detta DÖDAR lagget!)
   const drag = useRef({ isDragging: false, startX: 0, currentRot: 0, startRot: 0 });
 
   useEffect(() => setMounted(true), []);
 
-  // --- SUPER-OPTIMERAD DRAG-LOGIK ---
   const handlePointerDown = (e: React.PointerEvent) => {
     drag.current.isDragging = true;
     drag.current.startX = e.clientX;
@@ -54,7 +52,6 @@ export default function CyberCV() {
     if (!drag.current.isDragging || !carouselRef.current) return;
     const delta = (e.clientX - drag.current.startX) * 0.4;
     drag.current.currentRot = drag.current.startRot + delta;
-    // Vi ändrar DOM direkt = React behöver inte rendera om sidan = NOLL LAGG
     carouselRef.current.style.transform = `rotateY(${drag.current.currentRot}deg)`;
   };
 
@@ -62,7 +59,6 @@ export default function CyberCV() {
     if (!drag.current.isDragging || !carouselRef.current) return;
     drag.current.isDragging = false;
     
-    // Snäpper fast till närmaste 90-grader (Snygg UX)
     const snapped = Math.round(drag.current.currentRot / 90) * 90;
     drag.current.currentRot = snapped;
     
@@ -70,7 +66,6 @@ export default function CyberCV() {
     carouselRef.current.style.transform = `rotateY(${snapped}deg)`;
   };
 
-  // Knappar för de som inte vill dra
   const rotateTo = (direction: 'left' | 'right') => {
     if (!carouselRef.current) return;
     drag.current.currentRot += direction === 'left' ? 90 : -90;
@@ -83,8 +78,7 @@ export default function CyberCV() {
   return (
     <section className="relative min-h-[900px] h-[100vh] w-full py-20 bg-black flex flex-col items-center overflow-hidden">
       
-      {/* Rubrik */}
-      <div className="text-center mb-6 z-20 px-4 mt-4 pointer-events-none">
+      <div className="text-center mb-2 md:mb-6 z-20 px-4 mt-4 pointer-events-none">
         <p className="text-cyan-400 font-mono text-xs uppercase tracking-[0.3em] mb-4">
           Core Identity // System Logs
         </p>
@@ -92,21 +86,21 @@ export default function CyberCV() {
           Cyber <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400">CV.</span>
         </h2>
         <p className="text-gray-500 font-mono text-[10px] mt-6 uppercase">
-          Dra korten eller använd pilarna
+          Använd pilarna för att bläddra
         </p>
       </div>
 
-      {/* --- INGEN WEBGL - BARA REN CSS --- */}
+      {/* FIXEN: touchAction: "pan-y" tillåter dig att scrolla UPP/NER obehindrat på mobilen! */}
       <div 
-        className="w-full flex-1 flex items-center justify-center relative z-10 touch-none cursor-grab active:cursor-grabbing"
-        style={{ perspective: "1200px" }}
+        className="w-full flex-1 flex items-center justify-center relative z-10 cursor-grab active:cursor-grabbing pb-12 md:pb-0"
+        style={{ perspective: "1200px", touchAction: "pan-y" }}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}
+        onPointerCancel={handlePointerUp} // Viktigt på mobil när scrollen tar över
       >
         
-        {/* DEN GLÖDANDE BOLLEN (Fejkad med CSS för 100% prestanda) */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 pointer-events-none">
           <div className="absolute inset-0 rounded-full border border-cyan-500/30 animate-[spin_10s_linear_infinite]" />
           <div className="absolute inset-0 rounded-full border border-cyan-500/30 animate-[spin_12s_linear_infinite] opacity-60" style={{ transform: "rotateX(60deg)" }} />
@@ -114,18 +108,17 @@ export default function CyberCV() {
           <div className="absolute inset-0 rounded-full bg-cyan-500/5 shadow-[0_0_80px_rgba(0,243,255,0.15)] blur-md" />
         </div>
 
-        {/* PILAR (Ligger utanför 3D för klickbarhet) */}
-        <button onClick={(e) => { e.stopPropagation(); rotateTo('left'); }} className="absolute left-4 md:left-12 z-50 p-4 text-cyan-500 hover:text-white hover:bg-cyan-500/20 rounded-full transition-all bg-black/40 border border-cyan-500/30 backdrop-blur-md hidden md:block">
-          <ChevronLeft className="w-8 h-8" />
+        {/* PILAR (Nu synliga och centrerade även på mobil!) */}
+        <button onClick={(e) => { e.stopPropagation(); rotateTo('left'); }} className="absolute left-2 md:left-12 top-1/2 -translate-y-1/2 z-50 p-2 md:p-4 text-cyan-500 hover:text-white hover:bg-cyan-500/20 rounded-full transition-all bg-black/60 border border-cyan-500/30 backdrop-blur-md">
+          <ChevronLeft className="w-8 h-8 md:w-10 md:h-10" />
         </button>
-        <button onClick={(e) => { e.stopPropagation(); rotateTo('right'); }} className="absolute right-4 md:right-12 z-50 p-4 text-cyan-500 hover:text-white hover:bg-cyan-500/20 rounded-full transition-all bg-black/40 border border-cyan-500/30 backdrop-blur-md hidden md:block">
-          <ChevronRight className="w-8 h-8" />
+        <button onClick={(e) => { e.stopPropagation(); rotateTo('right'); }} className="absolute right-2 md:right-12 top-1/2 -translate-y-1/2 z-50 p-2 md:p-4 text-cyan-500 hover:text-white hover:bg-cyan-500/20 rounded-full transition-all bg-black/60 border border-cyan-500/30 backdrop-blur-md">
+          <ChevronRight className="w-8 h-8 md:w-10 md:h-10" />
         </button>
 
-        {/* 3D KARUSELLEN (Ren CSS) */}
         <div 
           ref={carouselRef}
-          className="w-full max-w-[400px] h-[600px] relative transform scale-[0.8] md:scale-100"
+          className="w-full max-w-[400px] h-[600px] relative transform scale-[0.75] md:scale-100"
           style={{ transformStyle: "preserve-3d" }}
         >
           {/* PANEL 1: PROFIL */}
