@@ -12,7 +12,8 @@ import ScrollReveal from "../components/ScrollReveal";
 
 export default function Home() {
   return (
-    <main id="top" className="relative min-h-screen cursor-none bg-black overflow-x-hidden selection:bg-cyan-500/30 selection:text-cyan-200">
+    // FIXEN: md:cursor-none (stör inte mobilen) och overflow-clip (låser inte fast scrollen)
+    <main id="top" className="relative min-h-screen md:cursor-none bg-black overflow-clip selection:bg-cyan-500/30 selection:text-cyan-200">
       
       <Preloader />
       <AmbientBackground />
@@ -30,9 +31,10 @@ export default function Home() {
           <ScrollReveal><Experience /></ScrollReveal>
         </div>
 
-        {/* FIXEN: 3D-scenen får INTE ligga i ScrollReveal, då kraschar Mac-datorer när man scrollar. */}
         <div id="skills">
-          <CyberCV />
+          <ScrollReveal>
+            <CyberCV />
+          </ScrollReveal>
         </div>
 
         <div id="projects">

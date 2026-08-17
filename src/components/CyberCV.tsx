@@ -35,9 +35,10 @@ const cvData = {
 
 export default function CyberCV() {
   return (
-    <section className="relative min-h-screen w-full py-24 bg-black flex flex-col items-center justify-center overflow-hidden">
+    // FIXEN: Ändrat overflow-hidden till overflow-visible så mobilen tillåter scroll!
+    <section className="relative min-h-screen w-full py-24 bg-black flex flex-col items-center justify-center overflow-visible">
       
-      {/* --- BAKGRUNDS EFFEKT (Prestandavänlig) --- */}
+      {/* --- BAKGRUNDS EFFEKT --- */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-cyan-900/20 blur-[120px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-emerald-900/10 blur-[120px]" />
@@ -54,10 +55,10 @@ export default function CyberCV() {
         </h2>
       </div>
 
-      {/* --- BENTO GRID (Det moderna sättet) --- */}
+      {/* --- BENTO GRID --- */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 w-full max-w-7xl mx-auto px-4 md:px-8 z-20">
         
-        {/* KORT 1: PROFIL (Spänner över 7 kolumner på desktop) */}
+        {/* KORT 1: PROFIL */}
         <div className="col-span-1 md:col-span-7 p-8 rounded-3xl bg-[#0a0a0a] border border-white/5 hover:border-cyan-500/30 transition-all duration-500 group relative overflow-hidden flex flex-col justify-center">
           <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/5 rounded-full blur-[80px] group-hover:bg-cyan-500/10 transition-colors" />
           
@@ -84,7 +85,7 @@ export default function CyberCV() {
           </div>
         </div>
 
-        {/* KORT 2: STACK (Spänner över 5 kolumner på desktop) */}
+        {/* KORT 2: STACK */}
         <div className="col-span-1 md:col-span-5 p-8 rounded-3xl bg-[#0a0a0a] border border-white/5 hover:border-emerald-500/30 transition-all duration-500 group relative overflow-hidden">
           <div className="flex items-center gap-4 mb-8">
             <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
@@ -108,7 +109,7 @@ export default function CyberCV() {
           </div>
         </div>
 
-        {/* KORT 3: JOBB ERFARENHET (Spänner över 6 kolumner på desktop) */}
+        {/* KORT 3: JOBB ERFARENHET */}
         <div className="col-span-1 md:col-span-6 p-8 rounded-3xl bg-[#0a0a0a] border border-white/5 hover:border-cyan-500/30 transition-all duration-500 group relative">
           <div className="flex items-center gap-4 mb-8">
             <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
@@ -131,10 +132,9 @@ export default function CyberCV() {
           </div>
         </div>
 
-        {/* KORT 4: UTBILDNING & CERTIFIKAT (Spänner över 6 kolumner på desktop) */}
+        {/* KORT 4: UTBILDNING & CERTIFIKAT */}
         <div className="col-span-1 md:col-span-6 flex flex-col gap-6">
           
-          {/* Utbildning */}
           <div className="flex-1 p-8 rounded-3xl bg-[#0a0a0a] border border-white/5 hover:border-cyan-500/30 transition-all duration-500">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
@@ -153,7 +153,6 @@ export default function CyberCV() {
             </div>
           </div>
 
-          {/* Certifikat */}
           <div className="p-8 rounded-3xl bg-gradient-to-br from-cyan-900/20 to-[#0a0a0a] border border-cyan-500/20 hover:border-cyan-500/50 transition-all duration-500">
              <div className="flex items-center gap-4 mb-4">
               <Award className="w-6 h-6 text-cyan-400" />
