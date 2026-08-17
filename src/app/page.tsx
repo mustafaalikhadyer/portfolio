@@ -12,7 +12,7 @@ import ScrollReveal from "../components/ScrollReveal";
 
 export default function Home() {
   return (
-    <main id="top" className="relative min-h-screen cursor-none bg-black overflow-hidden selection:bg-cyan-500/30 selection:text-cyan-200">
+    <main id="top" className="relative min-h-screen cursor-none bg-black overflow-x-hidden selection:bg-cyan-500/30 selection:text-cyan-200">
       
       <Preloader />
       <AmbientBackground />

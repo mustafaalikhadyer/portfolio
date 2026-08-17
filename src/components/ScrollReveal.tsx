@@ -1,24 +1,33 @@
 "use client";
+import React, { useEffect, useRef } from "react";
 
-import { useEffect, useRef, ReactNode } from "react";
-
-export default function ScrollReveal({ children }: { children: ReactNode }) {
+export default function ScrollReveal({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && ref.current) {
-          // När komponenten syns, veckla ut den i 3D
-          ref.current.style.opacity = "1";
-          ref.current.style.transform = "translateY(0px) rotateX(0deg) scale(1)";
-          observer.unobserve(entry.target);
-        }
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // Tvingar Macens GPU att animera detta ljudlöst, utan att störa scrollen
+            entry.target.setAttribute(
+              "style",
+              "opacity: 1; transform: translateY(0); transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); will-change: auto;"
+            );
+            // Stänger av övervakningen när den väl är framme = noll lagg efteråt!
+            observer.unobserve(entry.target);
+          }
+        });
       },
-      { threshold: 0.15 }
+      { threshold: 0.1 }
     );
 
     if (ref.current) {
+      // Sätter startvärdet (osynlig och lite neråt) direkt på DOM-noden
+      ref.current.setAttribute(
+        "style",
+        "opacity: 0; transform: translateY(40px); will-change: opacity, transform;"
+      );
       observer.observe(ref.current);
     }
 
@@ -26,21 +35,8 @@ export default function ScrollReveal({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    // Perspective är magin som skapar 3D-djupet på sidan
-    <div style={{ perspective: "2000px" }} className="w-full">
-      <div
-        ref={ref}
-        style={{
-          opacity: 0,
-          // Objektet startar lutat bakåt i Z-led, längre ner och lite mindre
-          transform: "translateY(150px) rotateX(-25deg) scale(0.9)",
-          transformOrigin: "top center",
-          transition: "all 1.4s cubic-bezier(0.16, 1, 0.3, 1)", // Extremt mjuk "Apple"-fysik
-          transformStyle: "preserve-3d",
-        }}
-      >
-        {children}
-      </div>
+    <div ref={ref}>
+      {children}
     </div>
   );
 }
