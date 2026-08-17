@@ -5,7 +5,7 @@ import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import About from "../components/About";
 import Experience from "../components/Experience";
-import CyberCV from "../components/CyberCV"; // <-- NYA IMPORTEN
+import CyberCV from "../components/CyberCV"; 
 import Projects from "../components/Projects";
 import Footer from "../components/Footer";
 import ScrollReveal from "../components/ScrollReveal";
@@ -30,11 +30,9 @@ export default function Home() {
           <ScrollReveal><Experience /></ScrollReveal>
         </div>
 
-        {/* 🚀 DEN NYA CYBER-KOMPONENTEN 🚀 */}
+        {/* FIXEN: 3D-scenen får INTE ligga i ScrollReveal, då kraschar Mac-datorer när man scrollar. */}
         <div id="skills">
-          <ScrollReveal>
-            <CyberCV />
-          </ScrollReveal>
+          <CyberCV />
         </div>
 
         <div id="projects">
